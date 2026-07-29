@@ -72,7 +72,7 @@ Can't Process element in stream: {item}")
             for processor in self._processors:
                 print(f"{processor.__class__.__name__}: \
 total {processor._ingestions}, \
-remaining {processor._ingestions - processor._out_calls}")
+remaining {len(processor._storage)}")
 
 
 class NumericProcessor(DataProcessor):
@@ -154,7 +154,7 @@ class LogProcessor(DataProcessor):
                 self._ingestions += 1
             elif isinstance(data, list):
                 for dic in data:
-                    dic_str: str = ": ".join(dic.values())
+                    dic_str: str = " : ".join(dic.values())
                     self._storage.append(dic_str)
                 self._ingestions += len(data)
 
@@ -191,7 +191,7 @@ def main() -> None:
     DataStreamer.process_stream(data)
     print()
     DataStreamer.print_processor_stats()
-    print("\n Registering other data processors")
+    print("\nRegistering other data processors")
     DataStreamer.register_processor(TextProcessor())
     DataStreamer.register_processor(LogProcessor())
     print("Sending the same data again...\n")

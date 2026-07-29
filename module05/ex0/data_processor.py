@@ -109,7 +109,7 @@ class LogProcessor(DataProcessor):
                 self._storage.append(data_str)
             elif isinstance(data, list):
                 for dic in data:
-                    dic_str: str = ": ".join(dic.values())
+                    dic_str: str = " : ".join(dic.values())
                     self._storage.append(dic_str)
 
 

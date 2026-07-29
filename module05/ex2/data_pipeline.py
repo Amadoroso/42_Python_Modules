@@ -10,20 +10,22 @@ class NoValidation(Exception):
 
 
 class ExportPlugin(Protocol):
-    
+
     def process_output(self, data: list[tuple[int, str]]) -> None:
-        pass
+        ...
 
 
 class ExportCSV():
 
     def process_output(self, data: list[tuple[int, str]]) -> None:
 
-        lst: list[str] = [y for x, y in data]
-        lst = ",".join(lst)
         print("CSV Output:")
-        print(f"{lst}")
-        print()
+        if not data:
+            print("Empty")
+            return
+        lst: list[str] = [y for x, y in data]
+        lst_str: str = ",".join(lst)
+        print(f"{lst_str}")
 
 
 class ExportJSON():
@@ -31,9 +33,13 @@ class ExportJSON():
     def process_output(self, data: list[tuple[int, str]]) -> None:
 
         print("JSON Output:")
+        if not data:
+            print("Empty")
+            return
         lst: list[str] = [f'"item_{x}": "{y}"' for x, y in data]
-        lst = ",".join(lst)
-        print(f"{{{lst}}}")
+        lst_str: str = ",".join(lst)
+        print(f"{{{lst_str}}}")
+
 
 class DataProcessor(ABC):
 
@@ -98,7 +104,7 @@ Can't Process element in stream: {item}")
             for processor in self._processors:
                 print(f"{processor.__class__.__name__}: \
 total {processor._ingestions}, \
-remaining {processor._ingestions - processor._out_calls}")
+remaining {len(processor._storage)}")
 
     def output_pipeline(self, nb: int, plugin: ExportPlugin) -> None:
 
@@ -108,7 +114,6 @@ remaining {processor._ingestions - processor._out_calls}")
                 output_lst.append(processor.output())
             plugin.process_output(output_lst)
             output_lst.clear()
-
 
 
 class NumericProcessor(DataProcessor):
@@ -190,7 +195,7 @@ class LogProcessor(DataProcessor):
                 self._ingestions += 1
             elif isinstance(data, list):
                 for dic in data:
-                    dic_str: str = ": ".join(dic.values())
+                    dic_str: str = " : ".join(dic.values())
                     self._storage.append(dic_str)
                 self._ingestions += len(data)
 
@@ -249,25 +254,21 @@ def main() -> None:
     DataStreamer.process_stream(data)
     print()
     DataStreamer.print_processor_stats()
-    print("\n Registering other data processors")
+    print("\nRegistering other data processors")
     DataStreamer.register_processor(TextProcessor())
     DataStreamer.register_processor(LogProcessor())
     print("Sending the same data again...\n")
     DataStreamer.process_stream(data)
     DataStreamer.print_processor_stats()
-    print("\nattempting to add a new processor that already exists...\n")
-    DataStreamer.register_processor(NumericProcessor())
-    print("\nConsuming some processor elements:")
-    for processor in DataStreamer._processors:
-        print(f"{processor.__class__.__name__} \
-{processor.output()}, {processor.output()}")
     print()
     print("\nAdding the new batch of elements...")
     DataStreamer.process_stream(data2)
     DataStreamer.print_processor_stats()
     DataStreamer.output_pipeline(3, ExportCSV())
+    print()
     DataStreamer.output_pipeline(3, ExportJSON())
-
+    print()
+    DataStreamer.print_processor_stats()
 
 
 if __name__ == "__main__":
