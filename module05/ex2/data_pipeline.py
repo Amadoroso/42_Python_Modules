@@ -172,13 +172,26 @@ class TextProcessor(DataProcessor):
 
 class LogProcessor(DataProcessor):
 
+    @staticmethod
+    def __is_valid_dict(dictio: dict[Any, Any]):
+
+        if not isinstance(dictio, dict):
+            return False
+
+        for key, value in dictio.items():
+            if not isinstance(key, str):
+                return False
+            if not isinstance(value, str):
+                return False
+        return True
+
     def validate(self, data: Any) -> bool:
 
         if isinstance(data, dict):
-            return True
-        if isinstance(data, list):
-            for x in data:
-                if not isinstance(x, dict):
+            return self.__is_valid_dict(data)
+        elif isinstance(data, list):
+            for dictio in data:
+                if not self.__is_valid_dict(dictio):
                     return False
             return True
         else:
