@@ -5,13 +5,13 @@ import typing
 
 def reading_file() -> str:
 
+    file: typing.IO | None = None
     try:
         print(f"""=== Cyber Archives Recovery ===
 Accessing file '{sys.argv[1]}'""")
-        file: typing.IO = open(sys.argv[1], "r")
+        file = open(sys.argv[1], "r")
         content: str = file.read()
         print(f"---\n\n{content}\n---")
-        file.close()
         print(f"File '{sys.argv[1]}' closed.\n")
     except FileNotFoundError as e:
         print(f"Error opening file '{sys.argv[1]}': {e}")
@@ -19,11 +19,18 @@ Accessing file '{sys.argv[1]}'""")
     except PermissionError as e:
         print(f"Error opening file '{sys.argv[1]}': {e}")
         return ""
+    except IsADirectoryError as e:
+        print(f"'{sys.argv[1]}' is a directory: {e}")
+        return ""
+    finally:
+        if file:
+            file.close()
     return content
 
 
 def new_file(content: str) -> None:
 
+    out_file: typing.IO | None = None
     try:
         print("Transform data:")
         content = content.replace('\n', '#\n')
@@ -35,14 +42,18 @@ def new_file(content: str) -> None:
             print("Not saving data")
             return
         print(f"Saving data to '{new_name}'")
-        out_file: typing.IO = open(new_name, "w")
+        out_file = open(new_name, "w")
         out_file.write(content)
         print(f"Data saved to '{new_name}'")
-        out_file.close()
     except FileNotFoundError as e:
         print(f"Error saving to file '{new_name}': {e}")
     except PermissionError as e:
         print(f"Error saving to file '{new_name}': {e}")
+    except IsADirectoryError as e:
+        print(f"'{new_name}' is a directory: {e}")
+    finally:
+        if out_file:
+            out_file.close()
 
 
 def main() -> None:

@@ -3,22 +3,23 @@ def secure_archive(file_name: str, action: str = "r",
                    content: str = "") -> tuple[bool, str]:
 
     try:
-        if action == "w" and not content:
-            return (False, "No content provided for \
-write operation")
-        elif action == "w" and content:
+        if action == "w":
             with open(file_name, action) as file:
                 file.write(content)
                 return (True, content)
         elif action == "r" and content:
             return (False, "'r' flag doens't need content")
-        else:
+        elif action == "r" and not content:
             with open(file_name, action) as file:
                 return (True, file.read())
+        else:
+            return (False, f"Invalid '{action}' flag")
 
     except FileNotFoundError as e:
         return (False, e.__str__())
     except PermissionError as e:
+        return (False, e.__str__())
+    except IsADirectoryError as e:
         return (False, e.__str__())
 
 
