@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 class NoValidation(Exception):
 
-    def __init__(self, message="Improper data"):
+    def __init__(self, message="Improper data") -> None:
         super().__init__(message)
 
 
@@ -105,11 +105,11 @@ class LogProcessor(DataProcessor):
             raise NoValidation("Improper Log data")
         else:
             if isinstance(data, dict):
-                data_str: str = " : ".join(data.values())
+                data_str: str = ": ".join(data.values())
                 self._storage.append(data_str)
             elif isinstance(data, list):
                 for dic in data:
-                    dic_str: str = " : ".join(dic.values())
+                    dic_str: str = ": ".join(dic.values())
                     self._storage.append(dic_str)
 
 

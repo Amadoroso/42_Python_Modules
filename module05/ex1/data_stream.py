@@ -5,7 +5,7 @@ from typing import Any
 
 class NoValidation(Exception):
 
-    def __init__(self, message="Improper data"):
+    def __init__(self, message="Improper data") -> None:
         super().__init__(message)
 
 
@@ -63,7 +63,7 @@ Theres already a {processor.__class__.__name__}")
                 print(f"DataStream error - \
 Can't Process element in stream: {item}")
 
-    def print_processor_stats(self) -> None:
+    def print_processors_stats(self) -> None:
 
         print("=== DataStream Statistics ===")
         if not self._processors:
@@ -149,12 +149,12 @@ class LogProcessor(DataProcessor):
             raise NoValidation("Improper Log data")
         else:
             if isinstance(data, dict):
-                data_str: str = " : ".join(data.values())
+                data_str: str = ": ".join(data.values())
                 self._storage.append(data_str)
                 self._ingestions += 1
             elif isinstance(data, list):
                 for dic in data:
-                    dic_str: str = " : ".join(dic.values())
+                    dic_str: str = ": ".join(dic.values())
                     self._storage.append(dic_str)
                 self._ingestions += len(data)
 
@@ -184,19 +184,19 @@ def main() -> None:
     print("=== Code Nexus - Data Stream ===")
     DataStreamer: DataStream = DataStream()
     print("Initialized Data Stream...")
-    DataStreamer.print_processor_stats()
+    DataStreamer.print_processors_stats()
     print("\nRegistering Numeric Processor")
     DataStreamer.register_processor(NumericProcessor())
     print(f"Sending first batch of data: {data}\n")
     DataStreamer.process_stream(data)
     print()
-    DataStreamer.print_processor_stats()
+    DataStreamer.print_processors_stats()
     print("\nRegistering other data processors")
     DataStreamer.register_processor(TextProcessor())
     DataStreamer.register_processor(LogProcessor())
     print("Sending the same data again...\n")
     DataStreamer.process_stream(data)
-    DataStreamer.print_processor_stats()
+    DataStreamer.print_processors_stats()
     print("\nattempting to add a new processor that already exists...\n")
     DataStreamer.register_processor(NumericProcessor())
     print("\nConsuming some processor elements:")
@@ -204,7 +204,7 @@ def main() -> None:
         print(f"{processor.__class__.__name__} \
 {processor.output()}, {processor.output()}")
     print()
-    DataStreamer.print_processor_stats()
+    DataStreamer.print_processors_stats()
 
 
 if __name__ == "__main__":
