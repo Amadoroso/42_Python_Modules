@@ -88,7 +88,7 @@ class TextProcessor(DataProcessor):
 class LogProcessor(DataProcessor):
 
     @staticmethod
-    def __is_valid_dict(dictio: dict[Any, Any]):
+    def __is_valid_dict(dictio: dict[Any, Any]) -> bool:
 
         if not isinstance(dictio, dict):
             return False
