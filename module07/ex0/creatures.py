@@ -5,8 +5,8 @@ from abc import ABC, abstractmethod
 class Creature(ABC):
 
     def __init__(self) -> None:
-        self.name: str = ""
-        self.type: str = ""
+        self.name: str = "[CREATURE NAME]"
+        self.type: str = "[CREATURE TYPE]"
 
     @abstractmethod
     def attack(self) -> str:
