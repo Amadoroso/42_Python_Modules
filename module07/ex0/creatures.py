@@ -15,6 +15,9 @@ class Creature(ABC):
     def describe(self) -> str:
         return f"{self.name} is a {self.type} type Creature"
 
+    def __str__(self) -> str:
+        return self.__class__.__name__
+
 
 class Flameling(Creature):
 

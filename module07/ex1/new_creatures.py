@@ -30,7 +30,7 @@ class Bloomelle(Healers):
         Creature.__init__(self)
         HealCapability.__init__(self)
         self.name = "Bloomelle"
-        self.type = "Grass/Fairy "
+        self.type = "Grass/Fairy"
 
     def attack(self) -> str:
         return f"{self.name} uses Petal Dance!"
