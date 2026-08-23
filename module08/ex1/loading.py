@@ -16,13 +16,25 @@ try:
     print(f"[OK] {matplotlib.__name__} ({matplotlib.__version__})")
 except ImportError as e:
     print(f"Missing dependency: {e}")
-    print(f"Will stop checking!\n")
+    print("Will stop checking!\n")
     print("=== Dependency instalation instructions ===\n")
     print("For pip:\n$ pip install -r requirements.txt")
     print("Make sure you're running inside a venv\n")
     print("For Poetry:\n$ poetry install\n")
     print("Aborting execution...")
     sys.exit(42)
+
+
+def gen_wind_speed(meteo_df: pandas.DataFrame) -> pandas.DataFrame:
+
+    random_wspeed: numpy.ndarray = numpy.random.uniform(
+        100,
+        200,
+        len(meteo_df)
+        )
+    meteo_df["Top Wind Speed"] = numpy.round(random_wspeed, 1)
+    print(meteo_df)
+    return meteo_df
 
 
 def get_IPMA_data(
@@ -52,6 +64,7 @@ def get_IPMA_data(
     meteo_df: pandas.DataFrame = pandas.DataFrame(meteo_data)
     meteo_df = meteo_df[["forecastDate", "tMax", "tMin"]]
     meteo_df["tMax"] = meteo_df["tMax"].astype(float)
+    meteo_df = gen_wind_speed(meteo_df)
 
     return meteo_df.astype({"tMax": float, "tMin": float})
 
@@ -78,11 +91,22 @@ def plotter(data: pandas.DataFrame, city: str) -> None:
         label="Max Temp",
         color="red"
     )
+    ax2 = ax.twinx()
+    ax2.plot(
+        data["forecastDate"],
+        data["Top Wind Speed"],
+        marker="*",
+        linestyle=":",
+        label="Top Wind Speed",
+        color="green"
+    )
     ax.set_xlabel("Date")
     ax.set_ylabel("T (ºC)")
+    ax2.set_ylabel("Top Wind Speed (Km/h)")
     ax.set_title(f"Previsão Meteorológica Diária \
 até 5 dias: {city}")
-    ax.legend()
+    ax2.legend(loc="best")
+    ax.legend(loc="best")
     pyplot.show()
 
 

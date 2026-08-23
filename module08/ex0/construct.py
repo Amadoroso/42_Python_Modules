@@ -3,6 +3,7 @@ import sys
 import site
 import os
 
+
 def venv_detect() -> None:
 
     if sys.base_prefix == sys.prefix:
@@ -22,7 +23,7 @@ Safe to install packages without affecting the global system\n")
         print(f"Package instalation path:\n\
 {site.getsitepackages()[0]}")
     else:
-        print(f"Virtual Environment: None detected\n")
+        print("Virtual Environment: None detected\n")
         print("WARNING: You're in the global environment!\n\
 The machines can see everything you install.\n")
         print("To enter the construct, run:")
@@ -30,6 +31,7 @@ The machines can see everything you install.\n")
         print("source matrix_env/bin/activate # On Unix")
         print("matrix_env\\Scripts\\activate # On Windows")
         print("\nThen run this program again.")
+
 
 if __name__ == "__main__":
     venv_detect()
