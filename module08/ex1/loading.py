@@ -33,7 +33,8 @@ def gen_wind_speed(meteo_df: pandas.DataFrame) -> pandas.DataFrame:
         len(meteo_df)
         )
     meteo_df["Top Wind Speed"] = numpy.round(random_wspeed, 1)
-    print(meteo_df)
+    print("\n==== Using Numpy to generate data ====")
+    print("Generating random 'Top Wind Speeds' using numpy")
     return meteo_df
 
 
@@ -43,6 +44,7 @@ def get_IPMA_data(
         city: str
         ) -> pandas.DataFrame:
 
+    print("\n==== Using Get request to pull Weather info ====")
     print("Retrieving IPMA district capital IDs...")
     district_json: dict = requests.get(id_endpoint).json()
     dist_data: list[dict] = district_json["data"]
@@ -71,7 +73,7 @@ def get_IPMA_data(
 
 def plotter(data: pandas.DataFrame, city: str) -> None:
 
-    print("Generating visualization...")
+    print("\nGenerating visualization...")
     fig: matplotlib.figure.Figure
     ax: matplotlib.axes.Axes
     fig, ax = pyplot.subplots()
@@ -105,8 +107,8 @@ def plotter(data: pandas.DataFrame, city: str) -> None:
     ax2.set_ylabel("Top Wind Speed (Km/h)")
     ax.set_title(f"Previsão Meteorológica Diária \
 até 5 dias: {city}")
-    ax2.legend(loc="best")
-    ax.legend(loc="best")
+    ax2.legend(loc="upper right")
+    ax.legend(loc="lower right")
     pyplot.show()
 
 
