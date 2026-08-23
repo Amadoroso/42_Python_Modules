@@ -9,7 +9,7 @@ def venv_detect() -> None:
         status: tuple = ("You're still plugged in", False)
     else:
         status = ("Welcome to the construct", True)
-    
+
     print(f"\nMATRIX STATUS: {status[0]}\n")
     print(f"Current Python: {sys.executable}")
 
@@ -30,11 +30,6 @@ The machines can see everything you install.\n")
         print("source matrix_env/bin/activate # On Unix")
         print("matrix_env\\Scripts\\activate # On Windows")
         print("\nThen run this program again.")
-
-
-    
-
-
 
 if __name__ == "__main__":
     venv_detect()
