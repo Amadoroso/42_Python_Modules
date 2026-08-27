@@ -58,7 +58,8 @@ def main() -> None:
         )
         print(invalid_ss)
     except ValidationError as e:
-        print(e)
+        for error in e.errors():
+            print(error['msg'])
 
 
 if __name__ == "__main__":
