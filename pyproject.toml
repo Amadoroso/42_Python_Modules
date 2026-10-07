@@ -1,0 +1,21 @@
+[project]
+name = "python-modules"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Andre Amador",email = "andreamador76@gmail.com"}
+]
+requires-python = ">=3.10"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "flake8 (>=7.4.1,<8.0.0)",
+    "mypy (>=2.4.0,<3.0.0)"
+]
