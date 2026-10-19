@@ -7,7 +7,7 @@ import os
 def venv_detect() -> None:
 
     if sys.base_prefix == sys.prefix:
-        status: tuple = ("You're still plugged in", False)
+        status: tuple[str, bool] = ("You're still plugged in", False)
     else:
         status = ("Welcome to the construct", True)
 

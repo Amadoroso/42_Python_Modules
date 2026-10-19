@@ -1,33 +1,43 @@
 
 import sys
-print("\nLOADING STATUS: Loading programs...")
-print("\nChecking dependencies:")
+
 try:
     import requests
-    print(f"[OK] {requests.__name__} ({requests.__version__})")
     import pandas
-    print(f"[OK] {pandas.__name__} ({pandas.__version__})")
     import numpy
-    print(f"[OK] {numpy.__name__} ({numpy.__version__})")
     import matplotlib
     import matplotlib.figure
     import matplotlib.axes
     import matplotlib.pyplot as pyplot
-    print(f"[OK] {matplotlib.__name__} ({matplotlib.__version__})")
-except ImportError as e:
-    print(f"Missing dependency: {e}")
-    print("Will stop checking!\n")
-    print("=== Dependency instalation instructions ===\n")
-    print("For pip:\n$ pip install -r requirements.txt")
-    print("Make sure you're running inside a venv\n")
-    print("For Poetry:\n$ poetry install\n")
-    print("Aborting execution...")
-    sys.exit(42)
+except ImportError:
+    pass
 
 
-def gen_wind_speed(meteo_df: pandas.DataFrame) -> pandas.DataFrame:
+def check_dependencies() -> bool:
 
-    random_wspeed: numpy.ndarray = numpy.random.uniform(
+    all_loaded: bool = True
+    print("\nLOADING STATUS: Loading programs...")
+    print("\nChecking dependencies:")
+    packages: dict[str, str] = {
+        "requests": "Network access ready",
+        "pandas": "Data manipulation ready",
+        "numpy": "Numerical computation ready",
+        "matplotlib": "Visualization ready"
+    }
+    for name, description in packages.items():
+        if name in sys.modules:
+            print(f"[OK] {name} ({sys.modules[name].__version__}) - {description}")
+        else:
+            print(f"[NOK] {name} - not installed!")
+            all_loaded = False
+
+    print()
+    return all_loaded
+
+
+def gen_wind_speed(meteo_df: "pandas.DataFrame") -> "pandas.DataFrame":
+
+    random_wspeed: "numpy.ndarray" = numpy.random.uniform(
         100,
         200,
         len(meteo_df)
@@ -42,11 +52,16 @@ def get_IPMA_data(
         id_endpoint: str,
         meteo_endpoint: str,
         city: str
-        ) -> pandas.DataFrame:
+        ) -> "pandas.DataFrame":
 
     print("\n==== Using Get request to pull Weather info ====")
     print("Retrieving IPMA district capital IDs...")
-    district_json: dict = requests.get(id_endpoint).json()
+
+    try:
+        district_json: dict = requests.get(id_endpoint).json()
+    except requests.exceptions.RequestException:
+        return pandas.DataFrame()
+
     dist_data: list[dict] = district_json["data"]
 
     globIdLocal: str = ""
@@ -63,7 +78,7 @@ def get_IPMA_data(
     meteo_response: requests.Response = requests.get(full_meteo_endpoint)
     meteo_json: dict = meteo_response.json()
     meteo_data = meteo_json["data"]
-    meteo_df: pandas.DataFrame = pandas.DataFrame(meteo_data)
+    meteo_df: "pandas.DataFrame" = pandas.DataFrame(meteo_data)
     meteo_df = meteo_df[["forecastDate", "tMax", "tMin"]]
     meteo_df["tMax"] = meteo_df["tMax"].astype(float)
     meteo_df = gen_wind_speed(meteo_df)
@@ -71,11 +86,11 @@ def get_IPMA_data(
     return meteo_df.astype({"tMax": float, "tMin": float})
 
 
-def plotter(data: pandas.DataFrame, city: str) -> None:
+def plotter(data: "pandas.DataFrame", city: str) -> None:
 
     print("\nGenerating visualization...")
-    fig: matplotlib.figure.Figure
-    ax: matplotlib.axes.Axes
+    fig: "matplotlib.figure.Figure"
+    ax: "matplotlib.axes.Axes"
     fig, ax = pyplot.subplots()
     ax.plot(
         data["forecastDate"],
@@ -109,14 +124,27 @@ def plotter(data: pandas.DataFrame, city: str) -> None:
 até 5 dias: {city}")
     ax2.legend(loc="upper right")
     ax.legend(loc="lower right")
+    pyplot.savefig('matrix_analysis.png')
     pyplot.show()
+    print("Analysis complete!")
+    print("Results saved to: matrix_analysis.png")
 
 
 def main() -> None:
 
+    if not check_dependencies():
+        print("Missing modules!")
+        print("=== Dependency instalation instructions ===\n")
+        print("For pip:\n$ pip install -r requirements.txt")
+        print("Make sure you're running inside a venv\n")
+        print("For Poetry:\n$ poetry install\n")
+        print("Aborting execution...")
+        sys.exit(42)
+        return
+
     city: str = input("\nPlease input a valid \
 District capital Portuguese city (i.e: Lisboa): ")
-    city = city.lower().capitalize().replace(" ", "")
+    city = " ".join(word.capitalize() for word in city.strip().split())
 
     df: pandas.DataFrame = get_IPMA_data(
         "https://api.ipma.pt/open-data/distrits\
@@ -126,6 +154,7 @@ District capital Portuguese city (i.e: Lisboa): ")
         city
         )
     if df.empty:
+        print("IPMA API not returning data -> Can't produce plot :(")
         return
     else:
         plotter(df, city)
