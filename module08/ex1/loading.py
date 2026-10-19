@@ -26,7 +26,8 @@ def check_dependencies() -> bool:
     }
     for name, description in packages.items():
         if name in sys.modules:
-            print(f"[OK] {name} ({sys.modules[name].__version__}) - {description}")
+            print(f"[OK] {name} ({sys.modules[name].__version__}) \
+- {description}")
         else:
             print(f"[NOK] {name} - not installed!")
             all_loaded = False
@@ -75,7 +76,12 @@ def get_IPMA_data(
 
     print(f"Retrieving {city}'s 5 day Temperature report...")
     full_meteo_endpoint = meteo_endpoint.replace('[ID]', globIdLocal)
-    meteo_response: requests.Response = requests.get(full_meteo_endpoint)
+
+    try:
+        meteo_response: requests.Response = requests.get(full_meteo_endpoint)
+    except requests.exceptions.RequestException:
+        return pandas.DataFrame()
+
     meteo_json: dict = meteo_response.json()
     meteo_data = meteo_json["data"]
     meteo_df: "pandas.DataFrame" = pandas.DataFrame(meteo_data)
@@ -134,7 +140,7 @@ def main() -> None:
 
     if not check_dependencies():
         print("Missing modules!")
-        print("=== Dependency instalation instructions ===\n")
+        print("=== Dependency installation instructions ===\n")
         print("For pip:\n$ pip install -r requirements.txt")
         print("Make sure you're running inside a venv\n")
         print("For Poetry:\n$ poetry install\n")
