@@ -104,7 +104,7 @@ def plotter(data: "pandas.DataFrame", city: str) -> None:
         marker="o",
         linestyle="--",
         label="Min Temp",
-        color="blue"
+        color="blue"z
     )
     ax.plot(
         data["forecastDate"],
